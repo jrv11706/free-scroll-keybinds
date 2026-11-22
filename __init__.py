@@ -67,20 +67,29 @@ def actor_tick(
         be_interacting = False
         be_shooting = False
 
-    if pc.Pawn.IsInjured():
-        # Prevents picking up while in FFYL
-        be_interacting = False
+    if (str(pc.Pawn).find("WillowPlayerPawn") == 0):
+        # Not in a vehicle, Pawn is the player body
+
+        if pc.Pawn.IsInjured():
+            # Prevents picking up while in FFYL
+            be_interacting = False
 
 
-    if pc.Pawn.bInjuredDeadCameraActive:
-        # Prevents shooting while dying (ragdoll)
-        return
+        if pc.Pawn.bInjuredDeadCameraActive:
+            # Prevents shooting while dying (ragdoll)
+            return
 
-    if pc.Pawn.IsInjured() and not pc.Pawn.bInjuredIsCameraAnimPlaying:
-        # Prevents shooting while transitioning into FFYL
-        return
+        if pc.Pawn.IsInjured() and not pc.Pawn.bInjuredIsCameraAnimPlaying:
+            # Prevents shooting while transitioning into FFYL
+            return
 
-    
+    if (str(pc.Pawn).find("WillowVehicle") == 0):
+        # In a vehice, Pawn is now the vehicle
+
+        if be_interacting:
+            pc.ExitVehicle()
+
+
     if be_shooting:
         pc.StartFire()
         pc.StopFire()
@@ -89,11 +98,12 @@ def actor_tick(
         pc.Use()
         pc.PickupSomething(0)
 
+
 build_mod(
     name="Free-Scroll Keybinds",
     author="piikyu",
     description="Set keybinds to spam inputs!",
-    version="1.0",
+    version="1.1",
     keybinds=[
         fire_keybind_pressed,
         fire_keybind_released,
